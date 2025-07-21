@@ -16,7 +16,7 @@ $ gnome-extensions enable server-communicator@kappa63.github.com
 ## Gnome-Shell version support
 This extensions was only tested on the following version(s):
 * Gnome 48
-  * v01
+  * Latest
 
 ## Support
 For support you can preferably open an issue.
