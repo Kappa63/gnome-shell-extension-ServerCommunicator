@@ -1,7 +1,7 @@
 # Server - Communicator
 [<img src="https://micheleg.github.io/dash-to-dock/media/get-it-on-ego.png" height="100">](https://extensions.gnome.org/extension/8343/server-communicator)
 ## A quick way to call your APIs
-![screenshot](https://github.com/Kappa63/gnome-shell-extension-ServerCommunicator/raw/master/assets/app-screenshot.png)
+![screenshot](https://github.com/Kappa63/gnome-shell-extension-ServerCommunicator/raw/master/assets/app-screenshot-v2.0.png)
 
 ## Install from source
 Cloning the repo into your local gnome-shell extensions directory (usually ~/.local/share/gnome-shell/extensions/):
