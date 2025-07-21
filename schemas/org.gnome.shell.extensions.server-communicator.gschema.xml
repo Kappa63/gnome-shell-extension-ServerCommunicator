@@ -1,0 +1,9 @@
+<schemalist>
+  <schema id="org.gnome.shell.extensions.server-communicator" path="/org/gnome/shell/extensions/server-communicator/">
+    <key name="apis" type="as">
+      <default>[]</default>
+      <summary>API Labels</summary>
+      <description>List of API labels configured by the user</description>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,9 @@
+{
+  "name": "Server Communicator",
+  "description": "Quickly send API requests to servers. Uses clipboard access to copy API responses.",
+  "uuid": "server-communicator@kappa63.github.com",
+  "shell-version": [
+    "48"
+  ],
+  "settings-schema": "org.gnome.shell.extensions.server-communicator"
+}
