@@ -71,8 +71,8 @@ const ServerCommunicator = GObject.registerClass({
             const item = new PopupMenu.PopupMenuItem(a.label);
             item.connect("activate", async () => {
                 try {
-                    // log(a)
-                    const response = await HttpCallUtils.callApi(a.method, a.server, a.apiKey);
+                    log(a)
+                    const response = await HttpCallUtils.callApi(a.method, a.server, a.auth, a.params, a.body);
                     Main.notify(`Success: ${response.substring(0, 100)}`);
                     this._ext.clipboard.set_text(St.ClipboardType.CLIPBOARD, response);
                 } catch (e) {
