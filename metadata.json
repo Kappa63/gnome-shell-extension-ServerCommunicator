@@ -5,5 +5,7 @@
   "shell-version": [
     "48"
   ],
-  "settings-schema": "org.gnome.shell.extensions.server-communicator"
+  "settings-schema": "org.gnome.shell.extensions.server-communicator",
+  "url": "https://github.com/Kappa63/gnome-shell-extension-ServerCommunicator",
+  "version": 1
 }
