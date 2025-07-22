@@ -5,20 +5,27 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as HttpCallUtils from './HttpCallUtils.js';
 import APIsModel from './models/APIs.js';
 import GObject from 'gi://GObject';
+import Soup from 'gi://Soup';
 import St from 'gi://St';
 
 export default class ServerCommunicatorExtension extends Extension {
     enable() {
+        this._soupSession = new Soup.Session();
+
         this._serverCommunicator = new ServerCommunicator({
             settings: this.getSettings(),
             openPreferences: this.openPreferences,
             uuid: this.uuid,
+            session: this._soupSession,
             clipboard: St.Clipboard.get_default()
         });
         Main.panel.addToStatusArea(this.uuid, this._serverCommunicator);
     }
 
     disable() {
+        this._soupSession.abort()
+        this._soupSession = null;
+
         this._serverCommunicator.destroy();
         this._serverCommunicator = null;
     }
@@ -72,7 +79,7 @@ const ServerCommunicator = GObject.registerClass({
             item.connect("activate", async () => {
                 try {
                     log(a)
-                    const response = await HttpCallUtils.callApi(a.method, a.server, a.auth, a.params, a.body);
+                    const response = await HttpCallUtils.callApi(this._ext.session, a.method, a.server, a.auth, a.params, a.body);
                     Main.notify(`Success: ${response.substring(0, 100)}`);
                     this._ext.clipboard.set_text(St.ClipboardType.CLIPBOARD, response);
                 } catch (e) {

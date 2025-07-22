@@ -1,9 +1,7 @@
 import GLib from 'gi://GLib';
 import Soup from 'gi://Soup';
 
-const session = new Soup.Session();
-
-export async function callApi(method, url, auth, params, body) {
+export async function callApi(session, method, url, auth, params, body) {
     return new Promise((resolve, reject) => {
         const message = params.length?Soup.Message.new_from_encoded_form(method, url, Soup.form_encode_hash(JSON.parse(params))):Soup.Message.new(method, url)
 
