@@ -69,9 +69,10 @@ const ServerCommunicator = GObject.registerClass({
             style_class: "popup-menu-scroll-container",
             overlay_scrollbars: true
         });
-        scrollView.set_height(200);
+        scrollView.set_style("max-height: 300px; padding: 6px;");
 
         const vbox = new St.BoxLayout({ vertical: true });
+        vbox.set_style("margin-right: 10px;")
         scrollView.set_child(vbox);
 
         for (let a of this._apis) {
