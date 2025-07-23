@@ -28,7 +28,7 @@ export async function callApi(session, method, url, auth, params, body) {
             GLib.PRIORITY_DEFAULT,
             null,
             (session, result) => {
-                const status = message.get_status();
+                const status = message.status_code;
                 if (status >= 200 && status < 300) {
                     const bytes = session.send_and_read_finish(result);
                     const decoder = new TextDecoder("utf-8");
