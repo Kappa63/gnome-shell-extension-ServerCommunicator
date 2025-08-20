@@ -6,7 +6,7 @@ export default class ServerCommunicatorPreferences extends ExtensionPreferences 
     fillPreferencesWindow(window) {
         window.set_default_size(600, 700);
         const page = new Adw.PreferencesPage();
-        const group = new Adw.PreferencesGroup({ title: "Manage APIs" });
+        const group = new Adw.PreferencesGroup({ title: "Manage Comms" });
 
         const widget = new APIPrefsWidget(this);
         group.add(widget);

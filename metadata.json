@@ -1,11 +1,11 @@
 {
   "name": "Server Communicator",
-  "description": "Quickly send API requests to servers. Uses clipboard access to copy API responses.",
+  "description": "Send API requests to servers or mount them at a click of a button. Copies and shows response in a dialog.",
   "uuid": "server-communicator@kappa63.github.com",
   "shell-version": [
     "48"
   ],
   "settings-schema": "org.gnome.shell.extensions.server-communicator",
   "url": "https://github.com/Kappa63/gnome-shell-extension-ServerCommunicator",
-  "version": 4
+  "version": 5
 }

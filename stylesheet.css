@@ -1,0 +1,9 @@
+.status-area-scroll {
+    max-height: 300px;
+}
+
+.modal-dialog-title {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}

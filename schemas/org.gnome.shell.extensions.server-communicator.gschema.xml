@@ -5,5 +5,15 @@
       <summary>API Labels</summary>
       <description>List of API labels configured by the user</description>
     </key>
+    <key name="file-mgmt" type="as">
+      <default>[]</default>
+      <summary>SFTP and FTP for files</summary>
+      <description>List of File Mangers configured by the user</description>
+    </key>
+    <key name="order" type="as">
+      <default>[]</default>
+      <summary>Label Order</summary>
+      <description>Custom order for all labels</description>
+    </key>
   </schema>
 </schemalist>
