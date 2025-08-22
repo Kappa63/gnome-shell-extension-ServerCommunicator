@@ -10,7 +10,7 @@ import Order from './models/Order.js';
 import APIs from './models/APIs.js';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
-import Pango from 'gi://Pango';
+import Cogl from 'gi://Cogl';
 import Soup from 'gi://Soup';
 import Gio from 'gi://Gio';
 import St from 'gi://St';
@@ -75,14 +75,16 @@ const ServerCommunicator = GObject.registerClass({
         this._apis = this._apiModel.getAll();
         this._fms = this._fmModel.getAll();
 
-        const scrollItem = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
+        const labelPopupList = new PopupMenu.PopupBaseMenuItem({ reactive: false, can_focus: false });
         const scrollView = new St.ScrollView({
             overlay_scrollbars: true,
             style_class: "status-area-scroll"
         });
 
-        const vbox = new St.BoxLayout({ vertical: true });
-        // vbox.set_style("margin-right: 10px;")
+        const vbox = new St.BoxLayout({ 
+            vertical: true,
+            style_class: "status-area-box"
+        });
         scrollView.set_child(vbox);
 
         for (let o of this._order) {
@@ -97,8 +99,8 @@ const ServerCommunicator = GObject.registerClass({
             }
         }
 
-        scrollItem.actor.add_child(scrollView);
-        this.menu.addMenuItem(scrollItem);
+        labelPopupList.actor.add_child(scrollView);
+        this.menu.addMenuItem(labelPopupList);
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -116,6 +118,7 @@ const ServerCommunicator = GObject.registerClass({
 
         item.connect("activate", () => {
             (async () => {
+                this.menu.close();
                 try {
                     const response = await HttpCallUtils.callApi(this._ext.session, a.method, a.server, a.auth, a.params, a.body);
                     this._ext.clipboard.set_text(St.ClipboardType.CLIPBOARD, response);
@@ -142,6 +145,7 @@ const ServerCommunicator = GObject.registerClass({
 
         item.connect("activate", () => {
             (async () => {
+                this.menu.close();
                 try {
                     // global.display.set_cursor(11);
                     Main.notify("Mounting Server...")
@@ -161,29 +165,55 @@ const ServerCommunicator = GObject.registerClass({
 
     _showJsonModal(url, jsonData) {
         const jsonModal = new ModalDialog.ModalDialog({});
-        const scrollView = new St.ScrollView({
-                x_expand: true,
-                y_expand: true,
-            });
-        const messageLayout = new St.BoxLayout({ vertical: true});
-        const sourceURL = new St.Label({ text: `Response from ${url}`, style_class: "modal-dialog-title" })
+
+        const sourceURL = new St.Label({
+            text: `Response from ${url}`,
+            style_class: "modal-dialog-title",
+            x_expand: true,
+        });
         sourceURL.clutter_text.set_line_wrap(true);
-        sourceURL.clutter_text.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR);
+        sourceURL.clutter_text.set_line_wrap_mode(2);
+
+        const jsonText = new Clutter.Text({
+            text: JSON.stringify(jsonData, null, 2),
+            line_wrap: true,
+            line_wrap_mode: 2,
+            ellipsize: 0,
+            reactive: true,
+            selectable: true,
+            x_expand: true, 
+            y_expand: true,
+            color: new Cogl.Color({ red: 255, green: 255, blue: 255, alpha: 255 }),
+            selected_text_color: new Cogl.Color({ red: 0, green: 0, blue: 0, alpha: 255 })
+        });
+        jsonText.set_width(400);
+
+        const vp = new St.Viewport({ x_expand: true, y_expand: true });
+        vp.add_child(jsonText);
+
+        const scrollView = new St.ScrollView({
+            overlay_scrollbars: true,
+            style_class: "json-modal-scroll"
+        });
+        scrollView.set_child(vp);
+
+        const messageLayout = new St.BoxLayout({ 
+            vertical: true, 
+            x_expand: true, 
+            y_expand: true
+        });
         messageLayout.add_child(sourceURL);
-        const jsonString = new St.Label({ text: JSON.stringify(jsonData, null, 2) });
-        jsonString.clutter_text.set_line_wrap(true);
-        jsonString.clutter_text.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR);
-        messageLayout.add_child(jsonString);
-        scrollView.add_child(messageLayout)
-        jsonModal.contentLayout.add_child(scrollView);
-        jsonModal.setButtons([
-            {
-                label: "Close",
-                action: () => jsonModal.close(),
-                key: Clutter.KEY_Escape
-            },
-        ]);
+        messageLayout.add_child(scrollView);
+
+        jsonModal.contentLayout.add_child(messageLayout);
+        jsonModal.setButtons([{
+            label: "Close", 
+            action: () => jsonModal.close(), 
+            key: Clutter.KEY_Escape 
+        }]);
 
         jsonModal.open();
     }
+
+
 });
