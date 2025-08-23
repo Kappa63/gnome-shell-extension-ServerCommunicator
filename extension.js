@@ -152,7 +152,7 @@ const ServerCommunicator = GObject.registerClass({
                     await RemoteFileUtils.openRemoteInFiles(f.protocol, f.user, f.server);
                 } catch (e) {
                     Main.notify(`Error: ${e.message}`);
-                    logError(e);
+                    // logError(e);
                 } 
                 // finally {
                 //     global.display.set_cursor(null)

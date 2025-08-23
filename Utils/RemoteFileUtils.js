@@ -17,7 +17,7 @@ export async function openRemoteInFiles(protocol, user, server) {
     const loc = Gio.File.new_for_uri(sftpDirUri);
    
     if (!isMounted(loc)) {
-        try {
+        // try {
             await new Promise((resolve, reject) => {
                 loc.mount_enclosing_volume(
                     Gio.MountMountFlags.NONE,
@@ -33,9 +33,9 @@ export async function openRemoteInFiles(protocol, user, server) {
                     }
                 );
             });
-        } catch (e) {
-            return;
-        }
+        // } catch (e) {
+        //     throw e;
+        // }
     }
 
     Gio.AppInfo.launch_default_for_uri(sftpDirUri, null);

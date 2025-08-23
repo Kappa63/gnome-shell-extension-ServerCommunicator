@@ -4,6 +4,7 @@ import APIs from './models/APIs.js';
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
+import * as DataIEUtils from './Utils/DataIEUtils.js';
 
 export const APIPrefsWidget = GObject.registerClass(
 class APIPrefsWidget extends Gtk.Box {
@@ -103,21 +104,91 @@ class APIPrefsWidget extends Gtk.Box {
             });
             vbox.append(item);
         }
-
         toolbar.append(addBtn);
 
-        const deleteApiBtn = new Gtk.Button({ icon_name: "list-remove-symbolic" });
+        const deleteBtn = new Gtk.Button({ icon_name: "list-remove-symbolic" });
         this._signals.push({
-            widg: deleteApiBtn, 
-            sig: deleteApiBtn.connect("clicked", () => this._lblDelete())
+            widg: deleteBtn, 
+            sig: deleteBtn.connect("clicked", () => this._lblDelete())
         });
-        toolbar.append(deleteApiBtn);
+        toolbar.append(deleteBtn);
+
+        const spacer = new Gtk.Box({ hexpand: true });
+        toolbar.append(spacer);
+
+        const importBtn = new Gtk.Button({ icon_name: "go-bottom-symbolic" });
+        this._signals.push({
+            widg: importBtn, 
+            sig: importBtn.connect("clicked", (btn) => this._getSrcFile(btn))
+        });
+        toolbar.append(importBtn);
+
+        const exportBtn = new Gtk.Button({ icon_name: "go-top-symbolic" });
+        this._signals.push({
+            widg: exportBtn, 
+            sig: exportBtn.connect("clicked", (btn) => this._exportLbls(btn))
+        });
+        toolbar.append(exportBtn);
 
         return toolbar;
     }
 
-    _apiAdd() {
-        const newApi = {
+    _exportLbls(btn) {
+        const labelData = {};
+        labelData.apis = this._apiModel.getAll();
+        labelData.fileMgmt = this._fmModel.getAll();
+        try {
+            DataIEUtils.exportSchema(JSON.stringify(labelData, null, 2));
+            this._showMessage(btn, "Export successful. Saved in Downloads.")
+        } catch (e) {
+            this._showMessage(btn, "Failed to export.")
+        }
+    }
+
+    _getSrcFile(btn) {
+        let dialog = new Gtk.FileChooserDialog({
+            title: "Select File",
+            action: Gtk.FileChooserAction.OPEN,
+            transient_for: btn.get_root(),
+            modal: true,
+        });
+
+        dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL);
+        dialog.add_button("_Open", Gtk.ResponseType.OK);
+
+        dialog.connect("response", (d, response) => {
+            if (response === Gtk.ResponseType.OK) {
+                let file = dialog.get_file();
+                if (file) {
+                    let path = file.get_path();
+                    if (path) {
+                        this._importLbls(path)
+                    }
+                }
+            }
+            dialog.destroy();
+        });
+
+        dialog.show();
+    }
+
+    _importLbls(path) {
+        const labelData = DataIEUtils.importSchema(path);
+        for (const lbl of labelData.apis){
+            lbl.id = GLib.uuid_string_random();
+
+            this._apiAdd(lbl)
+        }
+
+        for (const lbl of labelData.fileMgmt){
+            lbl.id = GLib.uuid_string_random();
+
+            this._fileTransferAdd(lbl)
+        }
+    }
+
+    _apiAdd(newApi = null) {
+        const defaultApi = {
             id: GLib.uuid_string_random(),
             label: `API ${Date.now()}`,
             method: "GET",
@@ -127,6 +198,7 @@ class APIPrefsWidget extends Gtk.Box {
             body: null,
             popup: false
         };
+        newApi ??= defaultApi;
 
         this._apiModel.add(newApi);
         const iter = this._listStore.append();
@@ -136,14 +208,15 @@ class APIPrefsWidget extends Gtk.Box {
         this._orderModel.add({id: newApi.id, label: newApi.label, type: "API", trigger: false})
     }
     
-    _fileTransferAdd(){
-        const newFp = {
+    _fileTransferAdd(newFp){
+        const defaultFp = {
             id: GLib.uuid_string_random(),
             label: `FM ${Date.now()}`,
             protocol: "SFTP",
             user: "root",
             server: "localhost",
         };
+        newFp ??= defaultFp;
 
         this._fmModel.add(newFp);
         const iter = this._listStore.append();
@@ -600,5 +673,18 @@ class APIPrefsWidget extends Gtk.Box {
             default:
                 return { type };
         }
+    }
+
+    _showMessage(parent, message) {
+        let dialog = new Gtk.MessageDialog({
+            transient_for: parent.get_root(),
+            modal: true,
+            message_type: Gtk.MessageType.INFO,
+            buttons: Gtk.ButtonsType.OK,
+            text: message,
+        });
+
+        dialog.connect("response", () => dialog.destroy());
+        dialog.show();
     }
 });
